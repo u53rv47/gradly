@@ -1,13 +1,53 @@
 """
 Database Models
 """
+import os
+import uuid
+from pytz import country_names
 
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
-    PermissionsMixin
+    PermissionsMixin,
 )
+
+
+def image_file_path(instance, filename):
+    """Generate file path for new post and profile image."""
+    ext = os.path.splitext(filename)[1]
+    filename = f"{uuid.uuid4()}{ext}"
+    return os.path.join("uploads", getattr(instance, "class_name"), filename)
+
+
+class Domain(models.Model):
+    name = models.CharField(max_length=50, db_index=True, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Community(models.Model):
+    class Meta:
+        verbose_name_plural = "Communities"
+
+    domain = models.ForeignKey(
+        Domain, on_delete=models.CASCADE, related_name="communities"
+    )
+    name = models.CharField(max_length=50, db_index=True, unique=True)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, db_index=True, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -16,16 +56,20 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         """Create, save and return a new user"""
         if not email:
-            raise ValueError('User must have and email address.')
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+            raise ValueError("User must have and email address.")
+        email = self.normalize_email(email)
+        username = email.split("@")[0]
+        extra_fields["username"] = username
+
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, email, password):
+    def create_superuser(self, email, password, **extra_fields):
         """Create and return a new superuser."""
-        user = self.create_user(email=email, password=password)
+        user = self.create_user(email=email, password=password, **extra_fields)
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -35,24 +79,92 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system"""
+
     email = models.EmailField(max_length=255, unique=True)
+    username = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
-    GENDER_CHOICES = [
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
-        ('N', 'N/A')
-    ]
-    gender = models.CharField(
-        max_length=1, choices=GENDER_CHOICES, default='N')
-    image = models.ImageField(upload_to='profile_photos', null=True)
+    dob = models.DateField(null=True, blank=True)
+    GENDER_CHOICES = [("M", "Male"), ("F", "Female"), ("O", "Other"), ("N", "N/A")]
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="N")
+    country = models.CharField(
+        max_length=2, choices=country_names.items(), default="IN"
+    )
+
+    image = models.ImageField(upload_to=image_file_path, null=True, blank=True)
+    following = models.ManyToManyField(Community)
+
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["name"]
 
     objects = UserManager()
 
+    class_name = "user"
+
     def __str__(self):
         return self.name
+
+
+class Post(models.Model):
+    """Post model."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    community = models.ForeignKey(Community, on_delete=models.CASCADE)
+    title = models.CharField(max_length=150)
+    content = models.TextField()
+    image = models.ImageField(upload_to=image_file_path, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    class_name = "post"
+
+    def __str__(self):
+        return self.title
+
+
+class Comment(models.Model):
+    """Comment and reply in posts."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="comments",
+    )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now=True)
+
+    # If comment is a reply
+    replied_to = models.ForeignKey(
+        "self", on_delete=models.CASCADE, related_name="children", blank=True, null=True
+    )
+
+
+class Like(models.Model):
+    """Like/Dislike either Post or Comment"""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="likes",
+    )
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="likes", blank=True, null=True
+    )
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="likes", blank=True, null=True
+    )
+
+    created_at = models.DateTimeField(auto_now=True)
+    REACTION_CHOICES = [
+        ("L", "Like"),
+        ("H", "Helpful"),
+        ("S", "Smart"),
+        ("F", "Funny"),
+        ("U", "Uplifting"),
+    ]
+    reaction = models.CharField(max_length=1, choices=REACTION_CHOICES, default="L")

@@ -8,42 +8,58 @@ from django.utils.translation import gettext_lazy as _
 from core import models
 
 
+admin.site.register(models.Tag)
+admin.site.register(models.Domain)
+admin.site.register(models.Community)
+
+
 class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
-    ordering = ['id']
-    list_display = ['email', 'name', 'gender']
+
+    ordering = ["id"]
+    list_display = ["email", "name", "country"]
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        (_('Personal Info'), {'fields': ('name',)}),
         (
-            _('Permissions'),
-            {
-                'fields': (
-                    'is_active',
-                    'is_staff',
-                    'is_superuser',
-                )
-            }
+            None,
+            {"fields": ("email", "password")},
         ),
-        (_('Important dates'), {'fields': ('last_login',)}),
+        (
+            _("Personal Info"),
+            {"fields": ("name", "dob", "gender", "country")},
+        ),
+        (
+            _("Permissions"),
+            {"fields": ("is_active", "is_staff", "is_superuser")},
+        ),
+        (_("Important dates"), {"fields": ("last_login",)}),
     )
-    readonly_fields = ['last_login']
+    readonly_fields = ["last_login"]
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': (
-                'email',
-                'password1',
-                'password2',
-                'name',
-                'gender',
-                'is_verified',
-                'is_active',
-                'is_staff',
-                'is_superuser',
-            ),
-        }),
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "name",
+                    "username",
+                    "dob",
+                    "gender",
+                    "country",
+                    "is_verified",
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                ),
+            },
+        ),
     )
 
 
 admin.site.register(models.User, UserAdmin)
+
+admin.site.register(models.Post)
+admin.site.register(models.Comment)
+admin.site.register(models.Like)

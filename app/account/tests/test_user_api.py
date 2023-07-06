@@ -8,9 +8,9 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
-CREATE_USER_URL = reverse("user:create")
-TOKEN_URL = reverse("user:token")
-ME_URL = reverse("user:me")
+CREATE_USER_URL = reverse("account:create")
+TOKEN_URL = reverse("account:token")
+PROFILE_URL = reverse("account:profile")
 
 
 def create_user(**params):
@@ -19,7 +19,7 @@ def create_user(**params):
 
 
 class PublicUserApiTests(TestCase):
-    """TEst the public features of the user API."""
+    """Test the public features of the user API."""
 
     def setUp(self):
         self.client = APIClient()
@@ -38,7 +38,7 @@ class PublicUserApiTests(TestCase):
         self.assertTrue(user.check_password(payload["password"]))
         self.assertNotIn("password", res.data)
 
-    def test_user_with_semail_exists_error(self):
+    def test_user_with_email_exists_error(self):
         """Test error returned if user with email exists."""
         payload = {
             "email": "test@example.com",
@@ -101,7 +101,7 @@ class PublicUserApiTests(TestCase):
 
     def test_retrieve_user_unauthorized(self):
         """Test authentication is required for users."""
-        res = self.client.get(ME_URL)
+        res = self.client.get(PROFILE_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -120,14 +120,14 @@ class PrivateUserApiTests(TestCase):
 
     def test_retrieve_profile_success(self):
         """Test retrieving profile for logged in user."""
-        res = self.client.get(ME_URL)
+        res = self.client.get(PROFILE_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {"name": self.user.name, "email": self.user.email})
 
-    def test_post_me_not_allowed(self):
-        """Test POST is not allowed for the me endpoint."""
-        res = self.client.post(ME_URL, {})
+    def test_post_profile_not_allowed(self):
+        """Test POST is not allowed for the profile endpoint."""
+        res = self.client.post(PROFILE_URL, {})
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -138,7 +138,7 @@ class PrivateUserApiTests(TestCase):
             "password": "newpassword123",
         }
 
-        res = self.client.patch(ME_URL, payload)
+        res = self.client.patch(PROFILE_URL, payload)
 
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload["name"])
