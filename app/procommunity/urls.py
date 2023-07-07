@@ -33,7 +33,7 @@ urlpatterns = [
     ),
     path("api/account/", include("account.urls")),
     path("api/home/", include("home.urls")),
-    # path("api/post/", include("post.urls")),
+    path("api/post/", include("post.urls")),
     # path("api/feed/", include("feed.urls")),
 ]
 

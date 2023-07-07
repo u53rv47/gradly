@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "core",
     "account",
     "home",
-    # "post",
+    "post",
     # "feed",
 ]
 
