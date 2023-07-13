@@ -1,4 +1,4 @@
-# procommunity
+# gradly
 
 Follow below steps to setup the project:
 

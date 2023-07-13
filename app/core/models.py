@@ -50,6 +50,16 @@ class Tag(models.Model):
         return self.name
 
 
+class Profession(models.Model):
+    profession_choices = [("S", "Student"), ("P", "Professional")]
+    profession = models.CharField(max_length=1, default="S")
+    industry = models.CharField(max_length=1023, null=True, blank=True)
+    university = models.CharField(max_length=1023, null=True, blank=True)
+    major = models.ForeignKey(
+        Community, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+
 class UserManager(BaseUserManager):
     """Manager for users."""
 
@@ -62,6 +72,7 @@ class UserManager(BaseUserManager):
         extra_fields["username"] = username
 
         user = self.model(email=email, **extra_fields)
+
         user.set_password(password)
         user.save(using=self._db)
 
@@ -82,15 +93,21 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+
     dob = models.DateField(null=True, blank=True)
-    GENDER_CHOICES = [("M", "Male"), ("F", "Female"), ("O", "Other"), ("N", "N/A")]
+    GENDER_CHOICES = [("M", "Male"), ("F", "Female"), ("N", "N/A")]
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="N")
     country = models.CharField(
         max_length=2, choices=country_names.items(), default="IN"
     )
-
     image = models.ImageField(upload_to=image_file_path, null=True, blank=True)
+
+    profession = models.ForeignKey(
+        Profession, on_delete=models.SET_NULL, null=True, blank=True
+    )
     following = models.ManyToManyField(Community)
 
     is_verified = models.BooleanField(default=False)
@@ -98,14 +115,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name"]
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     objects = UserManager()
 
     class_name = "user"
 
     def __str__(self):
-        return self.name
+        return f"{self.first_name} {self.last_name}"
 
 
 class Post(models.Model):

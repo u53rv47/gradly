@@ -17,7 +17,7 @@ class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
 
     ordering = ["id"]
-    list_display = ["email", "name", "country"]
+    list_display = ["email", "first_name", "country"]
     fieldsets = (
         (
             None,
@@ -25,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
         ),
         (
             _("Personal Info"),
-            {"fields": ("name", "dob", "gender", "country")},
+            {"fields": ("first_name", "last_name", "dob", "gender", "country")},
         ),
         (
             _("Permissions"),
@@ -43,7 +43,8 @@ class UserAdmin(BaseUserAdmin):
                     "email",
                     "password1",
                     "password2",
-                    "name",
+                    "first_name",
+                    "last_name",
                     "username",
                     "dob",
                     "gender",

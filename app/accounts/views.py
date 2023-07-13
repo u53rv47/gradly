@@ -9,7 +9,7 @@ from rest_framework import (
     permissions,
 )
 
-from account.serializers import (
+from accounts.serializers import (
     UserSerializer,
     AuthTokenSerializer,
 )
