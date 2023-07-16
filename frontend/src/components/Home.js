@@ -26,6 +26,7 @@ const Home = () => {
             <img src={dummyImage} alt='Dummy' className='img-fluid' />
           </Col>
         </Row>
+
       </Container>
     </div>
   );
