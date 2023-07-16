@@ -1,25 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+/** @format */
 
-function App() {
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import About from './components/About.js';
+import Home from './components/Home.js';
+import Header from './components/Header.js';
+import Footer from './components/Footer.js';
+import Communities from './components/Communities.js';
+import Resources from './components/Resources.js';
+import Events from './components/Events.js';
+import './App.css';
+import './components/style.css';
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/home' element={<Home />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/communities' element={<Communities />} />
+        <Route path='/resources' element={<Resources />} />
+        <Route path='/events' element={<Events />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
-}
+};
 
 export default App;
