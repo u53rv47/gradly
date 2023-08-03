@@ -7,6 +7,8 @@ from rest_framework import (
     mixins,
     status,
 )
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -19,6 +21,8 @@ class PostViewSet(viewsets.ModelViewSet):
     """ViewSet for post APIs."""
 
     serializer_class = serializers.PostSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     # queryset = Post.objects.prefetch_related("comments").all()
 
@@ -29,6 +33,8 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CommentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Comment.objects.all()
 
     def perform_create(self, serializer):
@@ -38,6 +44,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LikeSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Like.objects.all()
 
     def perform_create(self, serializer):

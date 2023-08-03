@@ -88,6 +88,14 @@ class UserManager(BaseUserManager):
         return user
 
 
+# AUTH_PROVIDERS = {
+#     "facebook": "facebook",
+#     "google": "google",
+#     "twitter": "twitter",
+#     "email": "email",
+# }
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system"""
 
@@ -113,6 +121,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+
+    # auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDERS.get("email"))
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]

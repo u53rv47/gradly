@@ -7,7 +7,7 @@ from rest_framework import (
     mixins,
     status,
 )
-from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from feed import serializers
@@ -18,6 +18,9 @@ class PostListViewSet(viewsets.ModelViewSet):
     """ViewSet for feed APIs."""
 
     serializer_class = serializers.PostListSerializer
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     http_method_names = ["get"]
 
@@ -26,5 +29,8 @@ class PostDetailViewSet(viewsets.ModelViewSet):
     """ViewSet for feed APIs."""
 
     serializer_class = serializers.PostDetailSerializer
+
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     http_method_names = ["get"]

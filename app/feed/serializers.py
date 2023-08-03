@@ -9,17 +9,17 @@ from core.models import User, Post, Comment
 from home.serializers import CommunitySerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class FeedUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "name", "image"]
+        fields = ["id", "first_name", "last_name", "image"]
         read_only_fields = ["id"]
 
 
 class PostListSerializer(serializers.ModelSerializer):
     """Serializer for "retrieval" of post list for Feed/Home."""
 
-    user = UserSerializer(read_only=True)
+    user = FeedUserSerializer(read_only=True)
     community = CommunitySerializer(read_only=True)
     likes = serializers.IntegerField(source="likes.count", read_only=True)
     comment_count = serializers.IntegerField(source="comments.count", read_only=True)
@@ -45,7 +45,7 @@ class CommentDetailSerializer(serializers.ModelSerializer):
 
     # Refer https://stackoverflow.com/questions/13376894/django-rest-framework-nested-self-referential-objects for parent-child relationship
 
-    user = UserSerializer(read_only=True)
+    user = FeedUserSerializer(read_only=True)
     likes = serializers.IntegerField(source="likes.count", read_only=True)
 
     class Meta:

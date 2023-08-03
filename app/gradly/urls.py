@@ -17,6 +17,11 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 from django.contrib import admin
 from django.urls import path, include
@@ -31,7 +36,12 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),
-    path("api/accounts/", include("accounts.urls")),
+    # djoser
+    path("api/auth/", include("djoser.urls")),
+    path("api/auth/", include("djoser.urls.jwt")),
+    path("api/auth/", include("djoser.social.urls")),
+    # Custom apps
+    path("api/account/", include("account.urls")),
     path("api/home/", include("home.urls")),
     path("api/post/", include("post.urls")),
     path("api/feed/", include("feed.urls")),
