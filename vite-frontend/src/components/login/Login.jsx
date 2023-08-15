@@ -14,7 +14,7 @@ const Login = () => {
     // Load Google Platform API library
     const initGoogleAPI = () => {
       const script = document.createElement('script');
-      script.src = 'https://apis.google.com/js/platform.js';
+      script.src = 'https://apis.google.com/js/platform';
       script.async = true;
       script.onload = () => {
         // Initialize Google Platform API
@@ -32,7 +32,7 @@ const Login = () => {
     return () => {
       // Clean up the added script when the component is unmounted
       const script = document.querySelector(
-        'script[src="https://apis.google.com/js/platform.js"]'
+        'script[src="https://apis.google.com/js/platform"]'
       );
       if (script) {
         document.body.removeChild(script);
@@ -75,7 +75,7 @@ const Login = () => {
             id='emailOrPhone'
             name='emailOrPhone'
             placeholder='Enter your email'
-            // Add necessary event handlers to handle user input
+          // Add necessary event handlers to handle user input
           />
         </div>
         <div className='form-group'>
