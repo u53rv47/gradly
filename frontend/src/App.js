@@ -18,6 +18,7 @@ import Events from './components/Events.js';
 import './App.css';
 import './components/style.css';
 import Login from './components/login/Login.js';
+import SignUp from './components/login/SignUp.js';
 
 const App = () => {
   return (
@@ -31,7 +32,8 @@ const AppRoutes = () => {
   const location = useLocation();
 
   // Check if the current location is "/login"
-  const isLoginRoute = location.pathname === '/login';
+  const isLoginRoute =
+    location.pathname === '/login' || location.pathname === '/signup';
 
   return (
     <React.Fragment>
@@ -44,6 +46,7 @@ const AppRoutes = () => {
         <Route path='/resources' element={<Resources />} />
         <Route path='/events' element={<Events />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/signup' element={<SignUp />} />
       </Routes>
       {!isLoginRoute && <Footer />}
     </React.Fragment>

@@ -1,102 +1,215 @@
 /** @format */
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import queryString from 'query-string';
+import axios from 'axios';
+import {
+  Button,
+  // Card,
+  Typography,
+  Avatar,
+  CssBaseline,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+  Grid,
+  Box,
+  Container,
+} from '@mui/material';
+import { LockOpenOutlined } from '@mui/icons-material';
+import { BsLinkedin } from 'react-icons/bs';
+import { FcGoogle } from 'react-icons/fc';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 
-import React, { useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLinkedin, faGoogle } from '@fortawesome/free-brands-svg-icons';
+function Copyright(props) {
+  return (
+    <Typography
+      variant='body2'
+      color='text.secondary'
+      align='center'
+      {...props}>
+      {'Copyright © '}
+      <Link color='inherit' href='https://mui.com/'>
+        Your Website
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
-// import './Login.css';
+const defaultTheme = createTheme();
 
-const Login = () => {
-  const googleClientId =
-    '192577503971-iuehjh6pm3ka82f1i3f62iuaicl8jgom.apps.googleusercontent.com';
+export default function Login() {
+  const [user, setUser] = useState('');
+  const location = useLocation();
+
+  async function authenticate(state, code) {
+    const token = localStorage.getItem('refreshToken');
+
+    if (token) {
+      console.log('Token exists');
+      setUser(localStorage.getItem('user'));
+    } else {
+      const url = 'http://localhost:8000/api/auth/o/google-oauth2/';
+      const data = queryString.stringify({
+        code: code,
+        state: state,
+      });
+      const res = await axios.post(url, data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        },
+        withCredentials: true,
+      });
+      if (res.status === 201) {
+        console.log('Response: ' + res.data);
+        localStorage.setItem('accessToken', res.data.access);
+        localStorage.setItem('refreshToken', res.data.refresh);
+        localStorage.setItem('user', res.data.user);
+        setUser(res.data.user);
+      } else console.log(res);
+    }
+  }
 
   useEffect(() => {
-    // Load Google Platform API library
-    const initGoogleAPI = () => {
-      const script = document.createElement('script');
-      script.src = 'https://apis.google.com/js/platform.js';
-      script.async = true;
-      script.onload = () => {
-        // Initialize Google Platform API
-        window.gapi.load('auth2', () => {
-          window.gapi.auth2.init({
-            client_id: googleClientId,
-          });
-        });
-      };
-      document.body.appendChild(script);
-    };
+    const values = queryString.parse(location.search);
+    const state = values.state ? values.state : null;
+    const code = values.code ? values.code : null;
+    console.log('State: ' + state);
+    console.log('Code: ' + code);
+    if (state && code) {
+      authenticate(state, code);
+    }
+  }, [location]);
 
-    initGoogleAPI();
+  async function signupWithGoogle() {
+    try {
+      const url =
+        'http://localhost:8000/api/auth/o/google-oauth2/?redirect_uri=http://localhost:5173/';
 
-    return () => {
-      // Clean up the added script when the component is unmounted
-      const script = document.querySelector(
-        'script[src="https://apis.google.com/js/platform.js"]'
-      );
-      if (script) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+      const res = await axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      });
 
-  const handleLogin = (provider) => {
-    if (provider === 'LinkedIn') {
-    } else if (provider === 'Google') {
-      window.gapi.auth2
-        .getAuthInstance()
-        .signIn()
-        .then(
-          (googleUser) => {
-            const profile = googleUser.getBasicProfile();
-            console.log('Google login successful!');
-            console.log('ID: ' + profile.getId());
-            console.log('Name: ' + profile.getName());
-            console.log('Email: ' + profile.getEmail());
-            // You can perform additional actions with the retrieved user information here
-          },
-          (error) => {
-            console.error('Google login failed:', error);
-          }
-        );
+      console.log('Res: ' + res.data);
+      window.location.href = res.data.authorization_url;
+    } catch (err) {
+      console.log('Error logging in');
+    }
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get('email'),
+      password: data.get('password'),
+    });
+  };
+  const handleSocialLogin = (loginWith) => {
+    if (loginWith === 'google') {
     }
   };
-
   return (
-    <div className='login-container'>
-      <h2>Login</h2>
-      <form>
-        <div className='form-group'>
-          <label htmlFor='emailOrPhone'>
-            please enter you credential to log in:
-          </label>
-          <input
-            type='text'
-            id='emailOrPhone'
-            name='emailOrPhone'
-            placeholder='Enter your email'
-            // Add necessary event handlers to handle user input
-          />
-        </div>
-        <div className='form-group'>
-          <button type='submit'>Login</button>
-        </div>
-      </form>
-      <div className='separator'>
-        <span>OR</span>
-      </div>
-      <div className='social-buttons'>
-        <button onClick={() => handleLogin('LinkedIn')}>
-          <FontAwesomeIcon icon={faLinkedin} className='social-icon' />
-          Continue with LinkedIn
-        </button>
-        <button onClick={() => handleLogin('Google')}>
-          <FontAwesomeIcon icon={faGoogle} className='social-icon' />
-          Continue with Google
-        </button>
-      </div>
-    </div>
-  );
-};
+    <ThemeProvider theme={defaultTheme}>
+      <Container component='main' maxWidth='xs'>
+        <CssBaseline />
+        <Box
+          sx={{
+            marginTop: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <LockOpenOutlined />
+          </Avatar>
+          <Typography component='h1' variant='h5'>
+            Sign in
+          </Typography>
+          <Box
+            component='form'
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}>
+            <TextField
+              margin='normal'
+              required
+              fullWidth
+              id='email'
+              label='Email Address'
+              name='email'
+              autoComplete='email'
+              autoFocus
+            />
+            <TextField
+              margin='normal'
+              required
+              fullWidth
+              name='password'
+              label='Password'
+              type='password'
+              id='password'
+              autoComplete='current-password'
+            />
+            <FormControlLabel
+              control={<Checkbox value='remember' color='primary' />}
+              label='Remember me'
+            />
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Button
+                  variant='contained'
+                  fullWidth
+                  color='primary'
+                  startIcon={<FcGoogle />}
+                  onClick={() => handleSocialLogin('google')}
+                  // Add margin to the right for spacing
+                >
+                  Google
+                </Button>
+              </Grid>
+              <Grid item xs={6}>
+                <Button
+                  variant='contained'
+                  fullWidth
+                  color='primary'
+                  startIcon={<BsLinkedin />}
+                  onClick={() => handleSocialLogin('linkedin')}>
+                  LinkedIn
+                </Button>
+              </Grid>
+            </Grid>
 
-export default Login;
+            <Button
+              type='submit'
+              fullWidth
+              variant='contained'
+              sx={{ mt: 3, mb: 2 }}>
+              Sign In
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link to='/signup' variant='body2'>
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link to='/signup' variant='body2'>
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+        <Copyright sx={{ mt: 8, mb: 4 }} />
+      </Container>
+    </ThemeProvider>
+  );
+}
