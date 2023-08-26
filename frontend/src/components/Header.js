@@ -6,9 +6,9 @@ import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 
 const Header = () => {
   return (
-    <Navbar bg='dark' variant='dark' expand='lg'>
+    <Navbar bg='dark' variant='dark' expand='lg' className='navSticky'>
       <Container>
-        <Navbar.Brand as={Link} to='/'>
+        <Navbar.Brand as={Link} to='/' style={{fontSize:'30px'}}>
           Gradly
         </Navbar.Brand>
         <Navbar.Toggle aria-controls='navbar-nav' />

@@ -1,5 +1,15 @@
 /** @format */
 
+ .navSticky{
+  position: sticky;
+  top: 0;
+  overflow: auto;
+  z-index: 1;
+}
+.heightView{
+  height: 100vh;
+}
+
 .social-icon {
   width: 35px;
   font-size: 25px;
@@ -94,3 +104,50 @@ button:hover {
 }
 
 /* ... Other CSS rules ... */
+
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 120px;
+  width: 100%;
+  border: 1px solid gray;
+  border-radius: 50px;
+  margin: 30px auto;
+}
+
+.logo {
+  max-height: 70%;
+  padding: 0 20px;
+  /*Adjustasneededforspacing*/animation: moveLogos 10s linear infinite;
+  -webkit-animation: moveLogos 10s linear infinite;
+}
+
+@keyframes moveLogos {
+  0% {
+      transform: translateX(100%);
+  }
+  100% {
+      transform: translateX(-100%);
+  }
+  0% {
+    transform: translateX(100%);
+}
+}
+.list-unstyled li{
+  color: #0469d4;
+}
+.footerNavHead h5{
+  color: rgb(223, 223, 227);
+}
+.community-links h3{
+  text-align: center;
+}
+.community-links ul li{
+  font-size: 20px;
+  font-weight: 600;
+  list-style: none;
+  color: #0469d4;
+  text-align: center;
+}

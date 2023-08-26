@@ -45,9 +45,9 @@ const Footer = () => {
             </div>
           </Col>
           <Col md={8}>
-            <Row>
+            <Row className='footerNavHead'>
               <Col sm={4} className='mb-4'>
-                <h5>Main Links</h5>
+                <h5>Links</h5>
                 <ul className='list-unstyled'>
                   <li>
                     <Link to='/'>Home</Link>
@@ -67,7 +67,7 @@ const Footer = () => {
                 </ul>
               </Col>
               <Col sm={4} className='mb-4'>
-                <h5>Menus</h5>
+                <h5>Menu's</h5>
                 <ul className='list-unstyled'>
                   <li>
                     <Link to='/cookie-consent'>Cookie Consent Tool</Link>
