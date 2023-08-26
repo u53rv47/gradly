@@ -49,12 +49,7 @@ const Home = () => {
                 Engage with industry experts to gain insights, gather valuable
                 advice and stay ahead in your career.
               </p>
-              <Button
-                as={Link}
-                variant="primary"
-                to='/communities'
-                
-              >
+              <Button as={Link} variant="primary" to="/communities">
                 Join Community
               </Button>
             </div>
@@ -127,10 +122,7 @@ const Home = () => {
                 Find a wealth of industry-driven content that can support your
                 career advancement and provide valuable insights.
               </p>
-              <Button
-                as={Link} to='/resources'
-                variant="primary"
-              >
+              <Button as={Link} to="/resources" variant="primary">
                 Explore Resource
               </Button>
             </div>
