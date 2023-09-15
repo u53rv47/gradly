@@ -76,7 +76,8 @@ export default function SignUp() {
 
     // Validation checks
     const isValidDate = (dateString) => {
-      const pattern = /^\d{2}\/\d{2}\/\d{4}$/;
+      // const pattern = /^\d{2}\/\d{2}\/\d{4}$/;
+      const pattern = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
       return pattern.test(dateString);
     };
 
@@ -243,7 +244,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  required
+                  // required
                   fullWidth
                   id='phoneNumber'
                   label='Phone Number'
