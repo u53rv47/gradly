@@ -3,9 +3,10 @@ LABEL maintainer="Vijay Singh"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
+COPY ./app/requirements.txt /tmp/requirements.txt
+COPY ./app/requirements.dev.txt /tmp/requirements.dev.txt
+
 WORKDIR /app
 EXPOSE 8000
 
