@@ -59,6 +59,10 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+admin.site.register(models.Institute)
+admin.site.register(models.Industry)
+admin.site.register(models.Major)
+
 admin.site.register(models.User, UserAdmin)
 
 admin.site.register(models.Post)

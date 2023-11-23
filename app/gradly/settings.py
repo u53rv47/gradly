@@ -31,9 +31,9 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
-BASE_URL = "http://localhost:3000/"
+BASE_URL = "http://localhost:8000/"
 
 # Application definition
 
@@ -48,10 +48,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "drf_spectacular",
-    "social_django",
     "corsheaders",
-    # https://www.section.io/engineering-education/social-authentication-with-djoser-in-react-applications/
     "djoser",
+    # https://www.section.io/engineering-education/social-authentication-with-djoser-in-react-applications/
     # # Full Blog
     # # https://testdriven.io/blog/django-rest-auth/
     # "dj_rest_auth",
@@ -64,18 +63,14 @@ INSTALLED_APPS = [
     "post",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-]
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+#     "http://localhost:5173",
+# ]
+
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -196,9 +191,9 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "AUTH_HEADER_TYPES": ("JWT",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 DJOSER = {
@@ -213,7 +208,8 @@ DJOSER = {
         "http://127.0.0.1:8000/api/auth/o/google-oauth2",
     ],
     "SERIALIZERS": {
-        "account": "account.serializers.MyUserSerializer",
+        "user_create": "account.serializers.CreateUserSerializer",
+        "current_user": "account.serializers.CurrentUserSerializer",
     },
 }
 

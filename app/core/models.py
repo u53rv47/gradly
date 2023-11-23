@@ -43,21 +43,35 @@ class Community(models.Model):
         return self.name
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, db_index=True, unique=True)
+class Industry(models.Model):
+    class Meta:
+        verbose_name_plural = "Industries"
+
+    name = models.CharField(max_length=255, db_index=True, unique=True)
 
     def __str__(self):
         return self.name
 
 
-class Profession(models.Model):
-    profession_choices = [("S", "Student"), ("P", "Professional")]
-    profession = models.CharField(max_length=1, default="S")
-    industry = models.CharField(max_length=1023, null=True, blank=True)
-    university = models.CharField(max_length=1023, null=True, blank=True)
-    major = models.ForeignKey(
-        Community, on_delete=models.SET_NULL, null=True, blank=True
-    )
+class Institute(models.Model):
+    name = models.CharField(max_length=255, db_index=True, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Major(models.Model):
+    name = models.CharField(max_length=255, db_index=True, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50, db_index=True, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class UserManager(BaseUserManager):
@@ -70,7 +84,7 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         username = email.split("@")[0]
         extra_fields["username"] = username
-
+        print(extra_fields)
         user = self.model(email=email, **extra_fields)
 
         user.set_password(password)
@@ -86,14 +100,6 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
 
         return user
-
-
-# AUTH_PROVIDERS = {
-#     "facebook": "facebook",
-#     "google": "google",
-#     "twitter": "twitter",
-#     "email": "email",
-# }
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -113,9 +119,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     image = models.ImageField(upload_to=image_file_path, null=True, blank=True)
 
-    profession = models.ForeignKey(
-        Profession, on_delete=models.SET_NULL, null=True, blank=True
+    profession_choices = [("S", "Student"), ("P", "Professional")]
+    profession = models.CharField(max_length=1, choices=profession_choices, default="S")
+    industry = models.ForeignKey(
+        Industry, on_delete=models.SET_NULL, null=True, blank=True
     )
+    institute = models.ForeignKey(
+        Institute, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True, blank=True)
+
     following = models.ManyToManyField(Community)
 
     is_verified = models.BooleanField(default=False)

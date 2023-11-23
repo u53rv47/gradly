@@ -3,36 +3,51 @@ Serializers for the user API View.
 """
 
 from django.contrib.auth import get_user_model
-
-from django.utils.translation import gettext as _
-
+from core import models
 from rest_framework import serializers
+from djoser.serializers import (
+    UserSerializer,
+    UserCreateSerializer,
+)
 
 
-class MyUserSerializer(serializers.ModelSerializer):
+class CreateUserSerializer(UserCreateSerializer):
     """Serializer for the user object."""
 
+    class Meta(UserCreateSerializer.Meta):
+        fields = UserCreateSerializer.Meta.fields + ("dob", "gender")
+
+
+class CurrentUserSerializer(UserSerializer):
+    """Serializer for the user object."""
+
+    profession = serializers.CharField(source="get_profession_display")
+    industry = serializers.StringRelatedField()
+    institute = serializers.StringRelatedField()
+    major = serializers.StringRelatedField()
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + (
+            "profession",
+            "industry",
+            "institute",
+            "major",
+        )
+
+
+class InstituteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
-        fields = ["email", "password", "first_name", "last_name"]
-        extra_kwargs = {
-            "password": {
-                "write_only": True,
-                "min_length": 8,
-            }
-        }
+        model = models.Institute
+        fields = ["name"]
 
-    def create(self, validated_data):
-        """Create and return a new user with encrypted password."""
-        return get_user_model().objects.create_user(**validated_data)
 
-    def update(self, instance, validated_data):
-        """Update and return a user."""
-        password = validated_data.pop("password", None)
-        user = super().update(instance, validated_data)
+class IndustrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Industry
+        fields = ["name"]
 
-        if password:
-            user.set_password(password)
-            user.save()
 
-        return user
+class MajorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Major
+        fields = ["name"]

@@ -1,9 +1,12 @@
-import React from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import axios from "axios";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../store/user/userSlice";
+
 import img1 from "../Assets/gradely images/Picture1.png";
 import img2 from "../Assets/gradely images/Picture2.png";
-
 import img4 from "../Assets/gradely images/Picture4.png";
 import img5 from "../Assets/gradely images/Picture5.png";
 import img6 from "../Assets/gradely images/Picture6.png";
@@ -22,6 +25,53 @@ import yonexLogo from "../Assets/logos/Yonex.png";
 
 const Home = () => {
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user).user;
+  const dispatch = useDispatch()
+  useEffect(() => {
+    // Check if login has expired
+    const refresh = localStorage.getItem("refresh");
+    if (!!refresh) {
+      const url = process.env.REACT_APP_AUTH_URL + "/jwt/refresh/";
+      axios.post(url, { refresh }).then((res) => {
+        console.log("Home Access:", res.data);
+        const access = res.data.access;
+        localStorage.setItem("access", access);
+
+        // Check if user exists, else set the user
+        console.log(user);
+        if (user == null) {
+          const url = process.env.REACT_APP_AUTH_URL + "/users/me/";
+          axios.get(url, {
+            headers: {
+              'Authorization': `Bearer ${access}`
+            }
+          }).then((res) => {
+            console.log("Home User:", res.data);
+            dispatch(setUser(res.data));
+          }).catch((err) => {
+            if (err) {
+              console.log(err);
+            }
+          });
+        }
+      }).catch((err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
+  }, []);
+  useEffect(() => {
+    if (user) {
+      console.log("Profession:", user.profession);
+      if (user.profession == null)
+        navigate("/signup/profession");
+      else if ((user.profession === "Professional" && !user.industry) ||
+        (user.profession === "Student" && (!user.university || !user.major)))
+        navigate("/signup/field");
+    }
+  }, [user]);
+
   const logos = [
     castrolLogo,
     herbalifeLogo,

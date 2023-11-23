@@ -4,16 +4,26 @@ URL mappings for the user API.
 
 from django.urls import path
 from account import views
+from core.models import (
+    Institute,
+    Industry,
+    Major,
+)
+from rest_framework.routers import DefaultRouter
 
 app_name = "account"
+
+router = DefaultRouter()
+router.register(r"institutes", views.InstituteViewSet, basename="institutes")
+router.register(r"industries", views.IndustryViewSet, basename="industries")
+router.register(r"majors", views.MajorViewSet, basename="majors")
 
 urlpatterns = [
     # path("create/", views.CreateUserView.as_view(), name="create"),
     # path("profile/", views.ManageUserView.as_view(), name="profile"),
     path("code", views.RedirectSocial.as_view(), name="code"),
     path("get-csrf-token", views.get_csrf_token, name="csrf"),
-]
-
+] + router.urls
 
 """
 # dj_rest_auth important usrls

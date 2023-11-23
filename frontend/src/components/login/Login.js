@@ -1,7 +1,7 @@
 /** @format */
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 import axios from 'axios';
 import {
@@ -43,15 +43,15 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Login() {
-  const [user, setUser] = useState('');
+  const navigate = useNavigate();
   const location = useLocation();
 
   async function authenticate(state, code) {
-    const token = localStorage.getItem('refreshToken');
+    const token = localStorage.getItem('refresh');
 
     if (token) {
       console.log('Token exists');
-      setUser(localStorage.getItem('user'));
+      navigate(-1);
     } else {
       const url = 'http://localhost:8000/api/auth/o/google-oauth2/';
       const data = queryString.stringify({
@@ -66,10 +66,8 @@ export default function Login() {
       });
       if (res.status === 201) {
         console.log('Response: ' + res.data);
-        localStorage.setItem('accessToken', res.data.access);
-        localStorage.setItem('refreshToken', res.data.refresh);
-        localStorage.setItem('user', res.data.user);
-        setUser(res.data.user);
+        localStorage.setItem('access', res.data.access);
+        localStorage.setItem('refresh', res.data.refresh);
       } else console.log(res);
     }
   }
@@ -88,7 +86,7 @@ export default function Login() {
   async function signupWithGoogle() {
     try {
       const url =
-        'http://localhost:8000/api/auth/o/google-oauth2/?redirect_uri=http://localhost:5173/';
+        process.env.REACT_APP_AUTH_URL + '/o/google-oauth2/?redirect_uri=http://localhost:3000/';
 
       const res = await axios.get(url, {
         headers: {
@@ -107,9 +105,21 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const email = data.get('email');
+    const password = data.get('password');
     console.log({
-      email: data.get('email'),
-      password: data.get('password'),
+      email,
+      password
+    });
+    const url = process.env.REACT_APP_AUTH_URL + "/jwt/create/";
+    axios.post(url, { email, password }).then((res) => {
+      console.log(res.data);
+      localStorage.setItem("access", res.data.access);
+      localStorage.setItem("refresh", res.data.refresh);
+      navigate(-1);
+    }).catch((err) => {
+      if (err)
+        console.log(err);
     });
   };
   const handleSocialLogin = (loginWith) => {
@@ -128,7 +138,7 @@ export default function Login() {
             alignItems: 'center',
           }}>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOpenOutlined />
+            <LockOpenOutlined onClick={() => { navigate("/") }} />
           </Avatar>
           <Typography component='h1' variant='h5'>
             Sign in
@@ -170,7 +180,7 @@ export default function Login() {
                   color='primary'
                   startIcon={<FcGoogle />}
                   onClick={() => handleSocialLogin('google')}
-                  // Add margin to the right for spacing
+                // Add margin to the right for spacing
                 >
                   Google
                 </Button>
