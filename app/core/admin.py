@@ -28,6 +28,10 @@ class UserAdmin(BaseUserAdmin):
             {"fields": ("first_name", "last_name", "dob", "gender", "country")},
         ),
         (
+            _("Professional Info"),
+            {"fields": ("profession", "industry", "institute", "major")},
+        ),
+        (
             _("Permissions"),
             {"fields": ("is_active", "is_staff", "is_superuser")},
         ),

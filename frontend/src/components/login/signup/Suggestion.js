@@ -31,12 +31,11 @@ export default function Suggestion() {
 			temp.push(false);
 		setChecked(temp);
 	}, []);
-	console.log(checked);
-	console.log(communities);
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-
+		const selectedCommunities = communities.filter((community, i) => checked[i]);
+		console.log(selectedCommunities);
 	};
 	return (
 		<ThemeProvider theme={defaultTheme}>
@@ -63,7 +62,6 @@ export default function Suggestion() {
 						sx={{ mt: 3 }}>
 						<Grid
 							container
-							xs={12}
 							direction="row"
 							justifyContent="space-between"
 							alignItems="flex-start"

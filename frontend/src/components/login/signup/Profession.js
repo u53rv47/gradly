@@ -1,24 +1,11 @@
 /** @format */
 
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link, useNavigate } from 'react-router-dom';
-import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { FormControl, FormLabel, Radio, RadioGroup } from '@mui/material';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Button, CssBaseline, Grid, Box, Typography, Container } from '@mui/material';
 import { setProfession } from '../../../store/user/userSlice';
 
 const defaultTheme = createTheme();
@@ -44,7 +31,6 @@ export default function Profession() {
 				'Authorization': `Bearer ${access}`
 			}
 		}).then((res) => {
-			console.log("Profession Response:", res.data);
 			navigate("/signup/field");
 			dispatch(setProfession({ profession: res.data.profession }));
 		}).catch((err) => {

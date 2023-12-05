@@ -1,20 +1,24 @@
 /** @format */
 
-import * as React from 'react';
 import axios from 'axios';
-import { Button, CssBaseline, Grid, Box, Typography, Container, Select, MenuItem, TextField } from '@mui/material';
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { Button, CssBaseline, Grid, Box, Typography, Container, Select, MenuItem, TextField } from '@mui/material';
+import { setUser } from '../../../store/user/userSlice';
 
 const defaultTheme = createTheme();
 
 export default function Field() {
+	const navigate = useNavigate();
 	const user = useSelector(state => state.user).user;
-	console.log("Field:", user);
-	let isStudent = true;
-	if (user)
-		isStudent = user.profession === "Student";
+
+	let isStudent = !!user && user.profession === "Student";
+	React.useEffect(() => {
+		if ((isStudent && !!user.institute && !!user.major) || (!isStudent && !!user.industry))
+			navigate("/signup/suggest/");
+	}, []);
 	return (
 		<ThemeProvider theme={defaultTheme}>
 			<Container component='main' maxWidth='xs'>
@@ -60,8 +64,10 @@ async function fetchList(name, route) {
 }
 
 function Institute(props) {
-	const [institute, setInstitute] = React.useState("");
-	const [major, setMajor] = React.useState("");
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+	const [institute, setInstitute] = React.useState(0);
+	const [major, setMajor] = React.useState(0);
 	const [other, setOther] = React.useState("");
 
 	const [instituteList, setInstituteList] = React.useState(["Please select your Institute",]);
@@ -80,7 +86,33 @@ function Institute(props) {
 	}, []);
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		console.log({ institute, major });
+
+		const data = { major: major === 0 ? null : majorList[major], institute: institute === 0 ? null : instituteList[institute] };
+		if (!!other && other !== "Please enter your institute")
+			// console.log(other)
+			data["institute"] = other;
+
+		if (!!data.institute && !!data.major) {
+			console.log(data)
+			const url = process.env.REACT_APP_AUTH_URL + "/users/me/";
+			const access = localStorage.getItem("access");
+			console.log(`Bearer ${access}`);
+			axios.patch(url, data, {
+				headers: {
+					'Authorization': `Bearer ${access}`
+				}
+			}).then((res) => {
+				console.log("Field Response:", res.data);
+				navigate("/signup/suggest");
+				dispatch(setUser(res.data));
+			}).catch((err) => {
+				if (err) {
+					console.log(err);
+					navigate("/login");
+				}
+			});
+		}
+
 	};
 	return (
 		<Box
@@ -101,22 +133,23 @@ function Institute(props) {
 						<Select
 							fullWidth
 							size='small'
-							value={instituteList[0]}
+							value={institute}
+							defaultValue="Please select your Institute"
 							onChange={(event) => {
 								const value = event.target.value;
 								if (instituteList[value] === "Other") {
 									setOther("Please enter your institute");
-									setInstitute(instituteList[0]);
+									setInstitute(0);
 								} else {
 									setOther("");
 									setInstitute(value);
 								}
 							}}
 						>
-							{instituteList.map((institute, index, arr) => < MenuItem key={"institute " + index} value={institute}>{institute}</MenuItem>)}
+							{instituteList.map((institute, index, arr) => < MenuItem key={"institute " + index} value={index}>{institute}</MenuItem>)}
 						</Select>
 
-						{!!other && <TextField fullWidth size='small' placeholder={other} margin="normal" />}
+						{!!other && <TextField fullWidth size='small' margin="normal" placeholder={other} onChange={(e) => { setOther(e.target.value) }} />}
 					</Box>
 				</Grid >
 				<Grid item xs={12}>
@@ -131,12 +164,12 @@ function Institute(props) {
 						<Select
 							fullWidth
 							size='small'
-							value={majorList[0]}
+							value={major}
 							onChange={(event) => {
 								setMajor(event.target.value);
 							}}
 						>
-							{majorList.map((major, index, arr) => < MenuItem key={"major " + index} value={major}>{major}</MenuItem>)}
+							{majorList.map((major, index, arr) => < MenuItem key={"major " + index} value={index}>{major}</MenuItem>)}
 						</Select>
 					</Box>
 				</Grid >
