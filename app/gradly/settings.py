@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "home",
     "feed",
     "post",
+    "chatapi",
 ]
 
 # CORS_ALLOWED_ORIGINS = [

@@ -3,6 +3,7 @@ Database Models
 """
 import os
 import uuid
+import secrets
 from pytz import country_names
 
 from django.db import models
@@ -208,3 +209,17 @@ class Like(models.Model):
         ("U", "Uplifting"),
     ]
     reaction = models.CharField(max_length=1, choices=REACTION_CHOICES, default="L")
+
+
+class APIKey(models.Model):
+    key = models.CharField(max_length=255, unique=True, blank=True)
+    model_name = models.CharField(max_length=255, default="default_model_name")
+    model_id = models.CharField(max_length=255, default="default_model_id")
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = secrets.token_urlsafe(32)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.key
