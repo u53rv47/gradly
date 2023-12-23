@@ -83,11 +83,14 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("User must have and email address.")
         email = self.normalize_email(email)
+
         username = email.split("@")[0]
         extra_fields["username"] = username
+        apikey = secrets.token_urlsafe(32)
+        extra_fields["apikey"] = apikey
         print(extra_fields)
-        user = self.model(email=email, **extra_fields)
 
+        user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
@@ -96,6 +99,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         """Create and return a new superuser."""
         user = self.create_user(email=email, password=password, **extra_fields)
+
         user.is_staff = True
         user.is_superuser = True
         user.save(using=self._db)
@@ -108,6 +112,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=255)
+
+    apikey = models.CharField(max_length=32, null=True)
+    ai_models = models.ManyToManyField("AIModel", through="UserAIModel")
 
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -211,15 +218,17 @@ class Like(models.Model):
     reaction = models.CharField(max_length=1, choices=REACTION_CHOICES, default="L")
 
 
-class APIKey(models.Model):
-    key = models.CharField(max_length=255, unique=True, blank=True)
-    model_name = models.CharField(max_length=255, default="default_model_name")
-    model_id = models.CharField(max_length=255, default="default_model_id")
-
-    def save(self, *args, **kwargs):
-        if not self.key:
-            self.key = secrets.token_urlsafe(32)
-        super().save(*args, **kwargs)
+class AIModel(models.Model):
+    model_id = models.CharField(max_length=255)
+    model_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.key
+        return self.model_name
+
+
+class UserAIModel(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    aimodel = models.ForeignKey(AIModel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.name} - {self.aimodel.model_name}"

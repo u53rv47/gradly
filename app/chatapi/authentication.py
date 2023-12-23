@@ -1,17 +1,19 @@
+from django.contrib.auth import get_user_model
+
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from core.models import APIKey
 
 
 class APIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        api_key = request.META.get("HTTP_X_API_KEY")
-        if not api_key:
-            return None
+        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        if auth_header.startswith("Bearer "):
+            api_key = auth_header.split("Bearer ")[1]
+        else:
+            raise AuthenticationFailed("No API Key provided")
 
         try:
-            api_key_obj = APIKey.objects.get(key=api_key)
-            return (None, None)
-            # return (api_key_obj.user, None)
-        except APIKey.DoesNotExist:
+            user = get_user_model().objects.get(apikey=api_key)
+            return (user, None)
+        except get_user_model().DoesNotExist:
             raise AuthenticationFailed("Invalid API Key")

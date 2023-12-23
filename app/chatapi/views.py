@@ -1,16 +1,20 @@
 import json
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed, ParseError, APIException
-from rest_framework import status
-from core.models import APIKey
 import logging
+
+from django.contrib.auth import get_user_model
+
+from django.apps import apps
 from django.http import StreamingHttpResponse
 
-# from .serializers import MessageSerializer
 from .authentication import APIKeyAuthentication
-from ai_components.chat_model import ChatModel
-from rest_framework.exceptions import AuthenticationFailed
+
+# from .serializers import MessageSerializer
+
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed, ParseError, APIException
 
 
 class APIKeyValidationView(APIView):
@@ -19,28 +23,34 @@ class APIKeyValidationView(APIView):
     the associated model name and model ID.
     """
 
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        auth_header = request.META.get("HTTP_AUTHORIZATION", "")
-        if auth_header.startswith("Bearer "):
-            api_key = auth_header.split("Bearer ")[1]
-        else:
-            raise AuthenticationFailed("No API Key provided")
+        user = request.user
         try:
-            api_key_obj = APIKey.objects.get(key=api_key)
+            ai_models = user.ai_models.all()
+            data = [
+                {"model": "gpt-3.5-turbo", "id": "gpt-3.5-turbo-16k"},
+            ]
+            data.extend(
+                [
+                    {"model": ai_model.model_name, "id": ai_model.model_id}
+                    for ai_model in ai_models
+                ]
+            )
+            print(data)
             return Response(
-                {
-                    "data": [
-                        {"model": api_key_obj.model_name, "id": api_key_obj.model_id}
-                    ]
-                },
+                {"data": data},
                 status=status.HTTP_200_OK,
             )
-        except APIKey.DoesNotExist:
+        except get_user_model().DoesNotExist:
             raise AuthenticationFailed("Invalid API Key")
 
 
 class ChatAPIView(APIView):
-    # authentication_classes = [APIKeyAuthentication]
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         try:
@@ -57,10 +67,13 @@ class ChatAPIView(APIView):
 
             print(f"messages: {messages}")
 
-            chat_model = ChatModel()  # Create an instance of your ChatModel
+            chat_model = apps.get_app_config("chatapi").chat_model
 
             user_prompt = messages[-1]["content"] if messages else ""
             print(f"user_prompt: {user_prompt}")
+
+            # response = chat_model.predict(user_prompt)
+            # return StreamingHttpResponse(response, content_type="text/plain")
 
             def stream_chat_responses():
                 try:

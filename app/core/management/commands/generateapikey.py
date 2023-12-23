@@ -24,9 +24,3 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Generated new API key: {api_key.key}"))
         self.stdout.write(self.style.SUCCESS(f"Model Name: {model_name}"))
         self.stdout.write(self.style.SUCCESS(f"Model ID: {model_id}"))
-
-
-# python manage.py generateapikey   - command to generate an api key
-# Generated new API key: XswU4k7GbephTc0qp8_9MMOJ3CEIiqmYEimXkkuz6s4
-# Model Name: gpt-3.5-turbo
-# Model ID: gpt-3.5-turbo-16k

@@ -46,7 +46,7 @@ urlpatterns = [
     path("api/post/", include("post.urls")),
     path("api/feed/", include("feed.urls")),
     # Gradly Chat
-    path("api/", include("chatapi.urls")),
+    path("api/chat/", include("chatapi.urls")),
 ]
 
 if settings.DEBUG:
