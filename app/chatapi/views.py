@@ -65,27 +65,27 @@ class ChatAPIView(APIView):
             # if not all([model, messages, key, prompt, temperature]):
             #     raise ParseError("Missing required fields")
 
-            print(f"messages: {messages}")
+            # print(f"messages: {messages}")
 
             chat_model = apps.get_app_config("chatapi").chat_model
 
             user_prompt = messages[-1]["content"] if messages else ""
             print(f"user_prompt: {user_prompt}")
 
-            # response = chat_model.predict(user_prompt)
-            # return StreamingHttpResponse(response, content_type="text/plain")
+            response = chat_model.predict(user_prompt)
+            return StreamingHttpResponse(response, content_type="text/plain")
 
-            def stream_chat_responses():
-                try:
-                    for response_chunk in chat_model.predict(user_prompt):
-                        print(f"response_chunk:{response_chunk}")
-                        yield response_chunk
-                except Exception as e:
-                    raise RuntimeError(f"Error during prediction: {e}")
+            # def stream_chat_responses():
+            #     try:
+            #         for response_chunk in chat_model.predict(user_prompt):
+            #             print(f"response_chunk:{response_chunk}")
+            #             yield response_chunk
+            #     except Exception as e:
+            #         raise RuntimeError(f"Error during prediction: {e}")
 
-            return StreamingHttpResponse(
-                stream_chat_responses(), content_type="text/plain"
-            )
+            # return StreamingHttpResponse(
+            #     stream_chat_responses(), content_type="text/plain"
+            # )
             # return Response({"response": model_response}, status=status.HTTP_200_OK)
 
         except json.JSONDecodeError:

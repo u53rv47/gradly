@@ -50,12 +50,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "corsheaders",
     "djoser",
-    # https://www.section.io/engineering-education/social-authentication-with-djoser-in-react-applications/
-    # # Full Blog
-    # # https://testdriven.io/blog/django-rest-auth/
-    # "dj_rest_auth",
-    # "dj_rest_auth.registration",
-    # "oauth2_provider",
     "core",
     "account",
     "home",
@@ -84,7 +78,6 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "social_django.middleware.SocialAuthExceptionMiddleware",
 ]
-
 
 ROOT_URLCONF = "gradly.urls"
 
@@ -230,10 +223,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     "openid",
 ]
 SOCIAL_AUTH_GOOGLE_OAUTH2_EXTRA_DATA = ["first_name", "last_name"]
+
 # SESSION_COOKIE_SAMESITE = None
 # SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ["state"]
-# SESSION_COOKIE_SECURE = False
-# APPEND_SLASH = False
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
