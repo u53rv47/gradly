@@ -173,16 +173,14 @@ AUTH_USER_MODEL = "core.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "chatapi.authentication.APIKeyAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("account.authentication.GradlyAuthentication",),
 }
 
 
 SPECTACULAR_SETTINGS = {
     "COMPONENT_SPLIT_REQUEST": True,
     "SCHEMA_PATH_PREFIX": r"/api/*",
+    "AUTHENTICATION_CLASSES": "account.authentication.GradlyAuthentication",
 }
 
 SIMPLE_JWT = {
@@ -203,7 +201,7 @@ DJOSER = {
         "http://127.0.0.1:8000/api/auth/o/google-oauth2",
     ],
     "SERIALIZERS": {
-        "user_create": "account.serializers.CreateUserSerializer",
+        # "user_create": "account.serializers.CreateUserSerializer",
         "current_user": "account.serializers.CurrentUserSerializer",
     },
 }

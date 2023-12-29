@@ -9,22 +9,14 @@ from core.models import (
     Major,
 )
 from rest_framework import serializers
-from djoser.serializers import (
-    UserSerializer,
-    UserCreateSerializer,
-)
-
-
-class CreateUserSerializer(UserCreateSerializer):
-    """Serializer for the user object."""
-
-    class Meta(UserCreateSerializer.Meta):
-        fields = UserCreateSerializer.Meta.fields + ("dob", "gender")
+from djoser.serializers import UserSerializer
 
 
 class CurrentUserSerializer(UserSerializer):
     """Serializer for the user object."""
 
+    # dob = serializers.DateField()
+    # gender = serializers.CharField(source="get_gender_display")
     profession = serializers.CharField(source="get_profession_display")
     industry = serializers.CharField()
     institute = serializers.CharField()
@@ -32,6 +24,8 @@ class CurrentUserSerializer(UserSerializer):
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + (
+            "dob",
+            "gender",
             "profession",
             "industry",
             "institute",

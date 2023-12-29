@@ -3,11 +3,12 @@ Views for the user API.
 """
 
 from django.views import View
-from rest_framework import viewsets, mixins
-from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
+
+from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 from core.models import (
     Institute,
@@ -56,7 +57,7 @@ class RedirectSocial(View):
 #     """Manage the authenticated user."""
 
 #     serializer_class = UserCreateSerializer
-#     authentication_classes = [JWTAuthentication]
+#     authentication_classes = [[JWTAuthentication]]
 #     permission_classes = [permissions.IsAuthenticated]
 
 #     def get_object(self):

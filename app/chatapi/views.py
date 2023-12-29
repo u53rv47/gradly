@@ -23,7 +23,6 @@ class APIKeyValidationView(APIView):
     the associated model name and model ID.
     """
 
-    authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -39,7 +38,6 @@ class APIKeyValidationView(APIView):
                     for ai_model in ai_models
                 ]
             )
-            print(data)
             return Response(
                 {"data": data},
                 status=status.HTTP_200_OK,
@@ -49,7 +47,6 @@ class APIKeyValidationView(APIView):
 
 
 class ChatAPIView(APIView):
-    authentication_classes = [APIKeyAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):

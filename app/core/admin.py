@@ -12,6 +12,8 @@ admin.site.register(models.Tag)
 admin.site.register(models.Domain)
 admin.site.register(models.Community)
 
+admin.site.register(models.AIModel)
+
 
 class UserAdmin(BaseUserAdmin):
     """Define the admin pages for users."""
