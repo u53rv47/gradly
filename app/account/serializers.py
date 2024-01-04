@@ -9,14 +9,20 @@ from core.models import (
     Major,
 )
 from rest_framework import serializers
-from djoser.serializers import UserSerializer
+from djoser.serializers import UserSerializer, UserCreateSerializer
+
+
+# class CreateUserSerializer(UserCreateSerializer):
+#     class Meta(UserCreateSerializer.Meta):
+#         fields = UserCreateSerializer.Meta.fields + ("apikey",)
+#         extra_kwargs = {"apikey": {"read_only": True}}
 
 
 class CurrentUserSerializer(UserSerializer):
     """Serializer for the user object."""
 
     # dob = serializers.DateField()
-    # gender = serializers.CharField(source="get_gender_display")
+    gender = serializers.CharField(source="get_gender_display")
     profession = serializers.CharField(source="get_profession_display")
     industry = serializers.CharField()
     institute = serializers.CharField()

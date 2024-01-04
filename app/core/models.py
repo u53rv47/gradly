@@ -121,21 +121,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     dob = models.DateField(null=True, blank=True)
     GENDER_CHOICES = [("M", "Male"), ("F", "Female"), ("N", "N/A")]
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="N")
-    country = models.CharField(
-        max_length=2, choices=country_names.items(), default="IN"
-    )
-    image = models.ImageField(upload_to=image_file_path, null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True)
+    country = models.CharField(max_length=2, choices=country_names.items(), null=True)
+    image = models.ImageField(upload_to=image_file_path, null=True)
 
     profession_choices = [("S", "Student"), ("P", "Professional")]
-    profession = models.CharField(max_length=1, choices=profession_choices, default="S")
-    industry = models.ForeignKey(
-        Industry, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    institute = models.ForeignKey(
-        Institute, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True, blank=True)
+    profession = models.CharField(max_length=1, choices=profession_choices, null=True)
+    industry = models.ForeignKey(Industry, on_delete=models.SET_NULL, null=True)
+    institute = models.ForeignKey(Institute, on_delete=models.SET_NULL, null=True)
+    major = models.ForeignKey(Major, on_delete=models.SET_NULL, null=True)
 
     following = models.ManyToManyField(Community)
 
