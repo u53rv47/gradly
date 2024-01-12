@@ -70,6 +70,8 @@ class ChatAPIView(APIView):
             print(f"user_prompt: {user_prompt}")
 
             response = chat_model.predict(user_prompt)
+            # for res in response:
+            #     print(res, end=" ## ")
             return StreamingHttpResponse(response, content_type="text/plain")
 
             # def stream_chat_responses():

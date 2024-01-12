@@ -1,7 +1,8 @@
-from dataclasses import dataclass
-from typing import Literal
-import logging
 import os
+import time
+import logging
+from typing import Literal
+from dataclasses import dataclass
 
 # Import necessary components from langchain
 from langchain.chat_models import ChatOpenAI
@@ -153,10 +154,11 @@ class ChatModel:
             for char in self.conversation.run(prompt):
                 response_chunk += char
 
-                # if char in ['\n', '.', '!', '?']:
-                if len(char) >= 50:
+                # if len(response_chunk) >= 5:
+                if char in [" ", "\n", ".", "!", "?"]:
                     yield response_chunk
                     response_chunk = ""
+                    time.sleep(50 / 1000)
             if response_chunk:
                 yield response_chunk
 
