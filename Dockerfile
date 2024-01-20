@@ -3,7 +3,6 @@ LABEL maintainer="gradly.com"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /requirements.txt
 COPY ./app /app
 COPY ./scripts /scripts
 
@@ -15,7 +14,7 @@ RUN python -m venv /py && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-deps \
         build-base postgresql-dev musl-dev linux-headers && \
-    /py/bin/pip install -r /requirements.txt && \
+    /py/bin/pip install -r /app/requirements.txt && \
     apk del .tmp-deps && \
     adduser --disabled-password --no-create-home app && \
     mkdir -p /vol/web/static && \
