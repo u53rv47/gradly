@@ -1,7 +1,11 @@
 ---
 name: Checks
 
-on: [push]
+# on: [push]
+on:
+  push:
+    branches:
+      - develop
 
 jobs:
   test-lint:
