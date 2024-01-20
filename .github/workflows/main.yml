@@ -16,9 +16,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
       - name: Install Utilities
         run: |
           sudo apt-get update
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -57,9 +59,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+
       - name: Install Utilities
         run: |
           sudo apt-get update
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -67,9 +71,11 @@ jobs:
       - name: Pull docker image
         run: |
           docker pull ${{secrets.AWS_ECR_LOGIN_URI}}/${{ secrets.ECR_REPOSITORY_NAME }}:latest
+
       - name: Run Docker Image to serve users
         run: |
           export IMAGE_NAME="${{secrets.AWS_ECR_LOGIN_URI}}"/"${{ secrets.ECR_REPOSITORY_NAME }}":latest AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }} && docker-compose docker-compose-deploy.yml up -d
+
       - name: Docker System Prune to Remove Old Images
         run: |
           docker system prune -f
