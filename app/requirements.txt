@@ -4,9 +4,11 @@ djoser>=2.2.0,<2.3
 drf-spectacular>=0.15.1,<0.16
 django-cors-headers>=4.2.0,<4.3
 psycopg2>=2.8.6,<2.9
-pillow>=8.2.0,<8.3.0
+Pillow>=10.2.0,<10.3.0
 openai
 tiktoken
 langchain
-pinecone-client
+langchain-openai
+langchain_community
+pinecone-client>=2.2.4,<2.3
 uwsgi>=2.0.23,<2.1

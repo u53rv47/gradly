@@ -5,11 +5,11 @@ from typing import Literal
 from dataclasses import dataclass
 
 # Import necessary components from langchain
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import Pinecone
 from langchain.memory import ConversationSummaryMemory
 from langchain.chains import ConversationChain
-from langchain.vectorstores import Pinecone
 import pinecone
 
 
@@ -31,7 +31,7 @@ class ChatModel:
             self.initialize_conversation_chain()
         except Exception as e:
             logging.error(f"Error during initialization: {e}")
-            raise
+            raise Exception(f"Error during initialization: {e}")
 
     def initialize_vector_store(self):
         # Initialize the Pinecone vector store for similarity search
@@ -44,7 +44,7 @@ class ChatModel:
             self.vectorstore = Pinecone(index, embed_model, "text")
         except Exception as e:
             logging.error(f"Error initializing vector store: {e}")
-            raise f"Error initializing vector store: {e}"
+            raise Exception(f"Error initializing vector store: {e}")
 
     def initialize_conversation_chain(self):
         # Initialize the conversation chain with LangChain
@@ -65,7 +65,7 @@ class ChatModel:
             )
         except Exception as e:
             logging.error(f"Error initializing conversation chain: {e}")
-            raise f"Error initializing conversation chain: {e}"
+            raise Exception(f"Error initializing conversation chain: {e}")
 
     def create_prompt(self, user_prompt, similar_docs):
         # Create the prompt using the user's input and similar documents
@@ -164,4 +164,4 @@ class ChatModel:
 
         except Exception as e:
             logging.error(f"Error during prediction: {e}")
-            raise f"Error during prediction: {e}"
+            raise Exception(f"Error during prediction: {e}")
