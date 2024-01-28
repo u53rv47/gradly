@@ -66,6 +66,7 @@ jobs:
 
       - name: Stop all running containers
         run: |
+          sudo systemctl restart docker.socket  docker.service && \
           if [ "$(docker ps -aq)" ]; then
             docker stop $(docker ps -aq)
           fi
