@@ -3,6 +3,8 @@ LABEL maintainer="gradly.com"
 
 ENV PYTHONUNBUFFERED 1
 
+EXPOSE 8000
+
 COPY ./app /app
 COPY ./scripts /scripts
 

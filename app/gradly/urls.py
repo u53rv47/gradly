@@ -17,11 +17,7 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenVerifyView,
-)
+
 
 from django.contrib import admin
 from django.urls import path, include
@@ -49,7 +45,7 @@ urlpatterns = [
     path("api/chat/", include("chatapi.urls")),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG == False:
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT,
